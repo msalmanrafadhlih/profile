@@ -53,3 +53,7 @@ needed. Reference it from your profile README with:
 - The GitHub fetch is a blocking `ureq` call, not async `reqwest` — this
   script does one fetch, then one browser session, in a straight line, so a
   sync HTTP client keeps the dependency tree (and MSRV) much lighter.
+
+<div align="center">
+  <img src="profile.svg" alt="Journal Profile" width="100%" />
+</div>

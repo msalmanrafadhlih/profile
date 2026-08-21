@@ -4,6 +4,7 @@
 //! simplified by dropping the local `serve.ts` HTTP server: chromiumoxide's
 //! `Page::set_content` can load the HTML directly, no localhost hop needed.
 
+use chromiumoxide::handler::viewport::Viewport;
 use std::path::Path;
 use std::time::Duration;
 
@@ -31,7 +32,11 @@ pub async fn render_html_to_svg(html: &str, output_path: &Path) -> Result<()> {
     let mut builder = BrowserConfig::builder()
         // CI runners execute as root, and Chrome refuses to run as root
         // without this flag.
-        .no_sandbox();
+        .no_sandbox()
+        // Guards against a separate, unrelated class of crashes in
+        // constrained/containerized environments where /dev/shm is small.
+        .arg("--disable-dev-shm-usage")
+        .viewport(Viewport { width: 1400, height: 800, ..Default::default() });
 
     // Optional override — GitHub Actions' `browser-actions/setup-chrome`
     // exports the binary path here; chromiumoxide otherwise tries to
@@ -48,12 +53,20 @@ pub async fn render_html_to_svg(html: &str, output_path: &Path) -> Result<()> {
 
     // chromiumoxide's `Handler` drives the CDP websocket in the background;
     // it has to be continuously polled or nothing else will make progress.
+    // IMPORTANT: don't break on a single event error — individual CDP
+    // events (network/DOM chatter once the page starts loading resources
+    // like the avatar image) can occasionally fail to decode; that's
+    // harmless noise, not a reason to stop driving the socket. Breaking
+    // here silently cancels every pending command elsewhere (surfaces as
+    // "oneshot canceled" from `set_content`/`screenshot`). Only stop when
+    // the stream truly ends (`None`).
     let handler_task = tokio::spawn(async move {
         while let Some(event) = handler.next().await {
-            if event.is_err() {
-                break;
+            if let Err(e) = event {
+                eprintln!("[chrome event, ignoring] {e:?}");
             }
         }
+        eprintln!("[chrome handler stream ended]");
     });
 
     let page = browser
