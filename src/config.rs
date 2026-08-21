@@ -29,14 +29,14 @@ pub const CONFIG: Config = Config {
     // "topic" is just a display label shown above the card; it does not
     // come from the GitHub API.
     pinned: &[
-        PinnedRepo { name: "nixos-development-templates", topic: "TODO: topic 1" },
-        PinnedRepo { name: "TODO-repo-2", topic: "TODO: topic 2" },
-        PinnedRepo { name: "TODO-repo-3", topic: "TODO: topic 3" },
-        PinnedRepo { name: "TODO-repo-4", topic: "TODO: topic 4" },
-        PinnedRepo { name: "TODO-repo-5", topic: "TODO: topic 5" },
-        PinnedRepo { name: "TODO-repo-6", topic: "TODO: topic 6" },
+        PinnedRepo { name: "flexinix", topic: "Nixos Configuration Flakes" },
+        PinnedRepo { name: "racooonfig", topic: "Linux Dotfiles" },
+        PinnedRepo { name: "nixdev", topic: "Nix Development Templates" },
+        PinnedRepo { name: "termux", topic: "termux config" },
+        PinnedRepo { name: "tquilla", topic: "discord bot" },
+        PinnedRepo { name: "gemini-pocket", topic: "project exam" },
     ],
 
     // Shown in the "Core Stack (Detected)" chip row on the card.
-    stack: &["NixOS", "Rust", "Nix"],
+    stack: &["NixOS", "Rust", "Helix", "Figma", "Canva"],
 };
