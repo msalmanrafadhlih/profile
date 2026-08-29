@@ -2,6 +2,7 @@
 .env
 
 # --- Nix / Devenv ---
+flake.lock
 .devenv/
 .envrc
 .direnv/
